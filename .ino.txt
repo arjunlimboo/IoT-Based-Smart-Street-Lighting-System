@@ -1,0 +1,162 @@
+#include "thingProperties.h"  // Include this file if using Arduino IoT Cloud
+
+
+
+// Pin Definitions
+const int irPin1 = D1;             // IR sensor 1 pin (GPIO5)
+const int irPin2 = D5;             // IR sensor 2 pin (GPIO14)
+const int irPin3 = D6;             // IR sensor 3 pin (GPIO12)
+const int ledPin1 = D2;            // LED 1 pin (GPIO4)
+const int ledPin2 = D7;            // LED 2 pin (GPIO13)
+const int ledPin3 = D8;            // LED 3 pin (GPIO15)
+const int ldrAnalogPin = A0;
+
+// Threshold values
+const int lightThreshold = 900;   // Light level below which it's considered 'dark'
+
+// Variables
+//bool motionDetected1 = false;
+//bool motionDetected2 = false;
+//bool motionDetected3 = false;
+
+void setup() {
+  // Initialize serial for debugging
+  Serial.begin(9600);
+  delay(1500);  // Allow time for Serial Monitor to initialize
+  
+  // Initialize IoT Cloud properties
+  initProperties();
+  
+  // Connect to Arduino IoT Cloud
+  ArduinoCloud.begin(ArduinoIoTPreferredConnection);
+
+  // Print debug information
+  setDebugMessageLevel(2);         // Debug message level (0-4)
+  ArduinoCloud.printDebugInfo();   // Print connection details
+
+
+  pinMode(irPin1, INPUT_PULLUP);   // IR sensor 1 pin (input with pull-up)
+  pinMode(irPin2, INPUT_PULLUP);   // IR sensor 2 pin (input with pull-up)
+  pinMode(irPin3, INPUT_PULLUP);   // IR sensor 3 pin (input with pull-up)
+  
+  pinMode(ledPin1, OUTPUT);        // LED 1 pin (output)
+  pinMode(ledPin2, OUTPUT);        // LED 2 pin (output)
+  pinMode(ledPin3, OUTPUT);        // LED 3 pin (output)
+  
+  // Ensure LEDs are off initially
+  digitalWrite(ledPin1, LOW);
+  digitalWrite(ledPin2, LOW);
+  digitalWrite(ledPin3, LOW);
+}
+
+void loop() {
+  // Keeps the IoT Cloud connection alive
+  ArduinoCloud.update();
+   // Read the light level from the LDR and sync it
+  lightLevel = analogRead(ldrAnalogPin);
+  LightLevel = lightLevel;  // Send the light level to the cloud
+
+  // Debug print
+  Serial.print("Light Level: ");
+  Serial.println(lightLevel);
+  
+  // Check connection status and print to Serial Monitor
+  if (ArduinoCloud.connected()) {
+    Serial.println("Connected to Arduino IoT Cloud");
+  } else {
+    Serial.println("Not connected to Arduino IoT Cloud");
+  }
+  
+  delay(1000);  // Wait 1 second before checking again
+   motionDetected1 = digitalRead(irPin1) == LOW;
+  motionDetected2 = digitalRead(irPin2) == LOW;
+  motionDetected3 = digitalRead(irPin3) == LOW;
+
+  // Update Cloud variables for motion detection
+  motionDetected1 = motionDetected1;
+  motionDetected2 = motionDetected2;
+  motionDetected3 = motionDetected3;
+
+
+  // Read IR sensor states (LOW means motion detected)
+  motionDetected1 = digitalRead(irPin1) == LOW;
+  motionDetected2 = digitalRead(irPin2) == LOW;
+  motionDetected3 = digitalRead(irPin3) == LOW;
+
+  // Read light level from LDR (higher values mean brighter light)
+  lightLevel = analogRead(ldrAnalogPin);
+
+  // Print out the current light level for debugging
+  Serial.print("Light Level: ");
+  Serial.println(lightLevel);
+
+  // Check if it's dark (light level below threshold) and motion is detected
+  if (motionDetected1 && lightLevel > lightThreshold) {
+    digitalWrite(ledPin1, HIGH);  // Turn on LED 1
+    Serial.println("Motion detected by Sensor 1 and it's dark! LED 1 ON");
+  } else {
+    digitalWrite(ledPin1, LOW);   // Turn off LED 1
+    if (!motionDetected1) {
+      Serial.println("No motion detected by Sensor 1");
+    }
+  }
+
+  if (motionDetected2 && lightLevel > lightThreshold) {
+    digitalWrite(ledPin2, HIGH);  // Turn on LED 2
+    Serial.println("Motion detected by Sensor 2 and it's dark! LED 2 ON");
+  } else {
+    digitalWrite(ledPin2, LOW);   // Turn off LED 2
+    if (!motionDetected2) {
+      Serial.println("No motion detected by Sensor 2");
+    }
+  }
+
+  if (motionDetected3 && lightLevel > lightThreshold) {
+    digitalWrite(ledPin3, HIGH);  // Turn on LED 3
+    Serial.println("Motion detected by Sensor 3 and it's dark! LED 3 ON");
+  } else {
+    digitalWrite(ledPin3, LOW);   // Turn off LED 3
+    if (!motionDetected3) {
+      Serial.println("No motion detected by Sensor 3");
+    }
+}
+}
+
+/*
+  Since LightLevel is a READ_WRITE variable, onLightLevelChange() is
+  executed every time a new value is received from IoT Cloud.
+*/
+void onLightLevelChange() {
+  // Add your code here to act upon LightLevel change
+}
+
+/*
+  Since Led1 is a READ_WRITE variable, onLed1Change() is
+  executed every time a new value is received from IoT Cloud.
+*/
+void onLed1Change() {
+  // Add your code here to act upon Led1 change
+}
+
+
+/*
+  Since MotionDetected1 is READ_WRITE variable, onMotionDetected1Change() is
+  executed every time a new value is received from IoT Cloud.
+*/
+void onMotionDetected1Change()  {
+  // Add your code here to act upon MotionDetected1 change
+}
+/*
+  Since MotionDetected2 is READ_WRITE variable, onMotionDetected2Change() is
+  executed every time a new value is received from IoT Cloud.
+*/
+void onMotionDetected2Change()  {
+  // Add your code here to act upon MotionDetected2 change
+}
+/*
+  Since MotionDetected3 is READ_WRITE variable, onMotionDetected3Change() is
+  executed every time a new value is received from IoT Cloud.
+*/
+void onMotionDetected3Change()  {
+  // Add your code here to act upon MotionDetected3 change
+}
