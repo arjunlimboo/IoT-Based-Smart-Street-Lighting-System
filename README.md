@@ -66,5 +66,3 @@ This project implements a motion detection and light control system using Arduin
 This project is open-source and can be modified and distributed under the terms of the MIT License.
 
 ---
-
-Let me know if you'd like to add more details or customize this further!
